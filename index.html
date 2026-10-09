@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoadReady | Fuel Trip Calculator</title>
+<style>
+:root{--navy:#10233f;--blue:#2864dc;--mint:#b9f2dc;--paper:#f5f7fb;--ink:#17263c;--muted:#64748b}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;background:var(--paper);color:var(--ink)}
+header{background:var(--navy);color:white;padding:24px max(22px,calc((100% - 1080px)/2));display:flex;justify-content:space-between;align-items:center;gap:15px}
+.brand{font-size:1.25rem;font-weight:850;letter-spacing:.2px}.brand span{color:var(--mint)}.tag{font-size:.85rem;color:#d4deed}
+main{max-width:1080px;margin:36px auto;padding:0 20px}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:25px;align-items:stretch}
+.intro{background:var(--navy);color:white;border-radius:24px;padding:34px;min-height:260px;position:relative;overflow:hidden}
+.eyebrow{color:var(--mint);font-weight:800;text-transform:uppercase;letter-spacing:1.8px;font-size:.76rem}
+h1{font-size:clamp(2rem,4vw,3.15rem);line-height:1.04;margin:15px 0}.intro p{color:#d5dfef;max-width:450px;line-height:1.6}
+.road{font-size:4.5rem;position:absolute;right:20px;bottom:0;opacity:.9}
+.panel,.results{background:white;border-radius:24px;padding:26px;box-shadow:0 10px 35px #16294a0b;border:1px solid #e7ecf4}
+h2{margin:0 0 7px;font-size:1.3rem}.sub{color:var(--muted);font-size:.9rem;margin:0 0 22px;line-height:1.45}
+label{display:block;font-size:.88rem;font-weight:750;margin-bottom:7px}.field{margin-bottom:16px}input{width:100%;padding:13px 14px;border:1px solid #d8e0eb;border-radius:12px;font:inherit;background:#fbfcff;color:var(--ink)}input:focus{outline:3px solid #2864dc25;border-color:var(--blue)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.hint{color:var(--muted);font-size:.78rem;margin-top:5px}
+button{width:100%;border:0;border-radius:13px;background:var(--blue);color:white;font:inherit;font-weight:800;padding:15px;cursor:pointer;margin-top:2px}button:hover{filter:brightness(.94)}button:focus-visible{outline:3px solid #2864dc66;outline-offset:3px}
+.error{color:#b42318;font-size:.88rem;margin-top:12px;display:none}
+.results{margin-top:25px}.result-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:17px}.pill{background:#e7fbf2;color:#147451;padding:7px 10px;border-radius:999px;font-size:.75rem;font-weight:800}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.metric{background:#f7f9fc;border:1px solid #edf1f7;border-radius:15px;padding:17px}.metric .name{font-size:.78rem;color:var(--muted);font-weight:700}.metric .value{font-size:1.55rem;font-weight:850;margin-top:7px;overflow-wrap:anywhere}.metric.total{background:#eaf1ff;border-color:#d7e3ff}.note{font-size:.83rem;color:var(--muted);line-height:1.55;margin-top:16px}.ai{margin-top:25px;display:grid;grid-template-columns:1fr 1fr;gap:18px}.advice{background:#fff;border:1px solid #e7ecf4;border-radius:20px;padding:22px}.advice p,.advice li{font-size:.9rem;line-height:1.6;color:#42516a}.advice ul{padding-left:20px}.footer{text-align:center;color:var(--muted);font-size:.8rem;padding:30px 10px}
+@media(max-width:760px){header{align-items:flex-start;flex-direction:column}.hero{grid-template-columns:1fr}.intro{min-height:230px}.road{font-size:3.5rem}.metrics{grid-template-columns:1fr 1fr}.ai{grid-template-columns:1fr}main{margin-top:20px}.panel,.results{padding:21px}}
+</style></head>
+<body>
+<header><div class="brand">Road<span>Ready</span> ⛽</div><div class="tag">Plan smarter. Drive farther.</div></header>
+<main>
+<section class="hero">
+<div class="intro"><div class="eyebrow">Your road-trip co-pilot</div><h1>Know your fuel cost<br>before you go.</h1><p>Estimate gas spending, add other trip expenses, and get practical ways to make your next drive more affordable.</p><div class="road" aria-hidden="true">🛣️</div></div>
+<div class="panel"><h2>Trip details</h2><p class="sub">Enter your route and vehicle information.</p>
+<form id="calcForm">
+<div class="field"><label for="distance">Trip distance (miles)</label><input id="distance" type="number" min="0.1" step="any" placeholder="e.g. 350" required></div>
+<div class="grid">
+<div class="field"><label for="mpg">Vehicle efficiency (MPG)</label><input id="mpg" type="number" min="0.1" step="any" placeholder="e.g. 28" required></div>
+<div class="field"><label for="price">Gas price ($/gallon)</label><input id="price" type="number" min="0" step="any" placeholder="e.g. 3.45" required></div>
+</div>
+<div class="field"><label for="extra">Other trip expenses ($, optional)</label><input id="extra" type="number" min="0" step="any" value="0"><div class="hint">For tolls, parking, or other planned costs.</div></div>
+<button type="submit">Calculate my trip →</button><div class="error" id="error" role="alert"></div>
+</form></div></section>
+<section class="results" aria-live="polite"><div class="result-head"><div><h2>Your estimate</h2><p class="sub" style="margin:4px 0 0">Results update when you calculate.</p></div><span class="pill">TRIP SUMMARY</span></div>
+<div class="metrics">
+<div class="metric"><div class="name">Fuel needed</div><div class="value" id="gallons">— gal</div></div>
+<div class="metric"><div class="name">Fuel cost</div><div class="value" id="fuelCost">—</div></div>
+<div class="metric"><div class="name">Other expenses</div><div class="value" id="extraCost">—</div></div>
+<div class="metric total"><div class="name">Estimated total</div><div class="value" id="total">—</div></div>
+</div><p class="note" id="summary">Enter your trip details above to see your estimate. Actual spending can vary with traffic, route, vehicle condition, and changing fuel prices.</p></section>
+<section class="ai">
+<div class="advice"><h2>Smart trip tips</h2><p id="tips">Calculate a trip to get recommendations tailored to your numbers.</p></div>
+<div class="advice"><h2>How the “smart” helper works</h2><p>This prototype uses a rule-based recommendation engine to interpret your calculated results and offer personalized cost-saving suggestions. It demonstrates an AI-style decision feature without sending your data to an external AI service.</p><p><strong>Try it:</strong> use a long distance, lower MPG, or a higher gas price and compare the advice.</p></div>
+</section>
+</main><div class="footer">RoadReady Fuel Trip Calculator · Estimates only, not a fuel-price guarantee.</div>
+<script>
+const form=document.getElementById('calcForm'), error=document.getElementById('error');
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+form.addEventListener('submit',async e=>{
+ e.preventDefault(); error.style.display='none';
+ const payload={distance:document.getElementById('distance').value,mpg:document.getElementById('mpg').value,price:document.getElementById('price').value,extra:document.getElementById('extra').value||0};
+ try{
+  const response=await fetch('/api/calculate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const data=await response.json();
+  if(!response.ok||!data.ok) throw new Error(data.error||'Unable to calculate this trip.');
+  const r=data.result;
+  document.getElementById('gallons').textContent=r.gallons.toFixed(2)+' gal';
+  document.getElementById('fuelCost').textContent=money(r.fuel_cost);
+  document.getElementById('extraCost').textContent=money(r.extra);
+  document.getElementById('total').textContent=money(r.total);
+  document.getElementById('summary').textContent=`For ${r.distance.toLocaleString()} miles at ${r.mpg} MPG, plan for about ${r.gallons} gallons. Estimated cost per mile including extra expenses: ${money(r.cost_per_mile)}.`;
+  let advice=[];
+  if(r.distance>=300) advice.push('For this longer trip, compare routes and consider combining stops to reduce extra driving.');
+  if(r.mpg<25) advice.push('Your entered fuel efficiency is below 25 MPG; steady speeds, correct tire pressure, and avoiding unnecessary cargo may help.');
+  if(r.fuel_cost>=100) advice.push('Fuel is a major expense for this trip. Compare current prices along your route before filling up.');
+  if(r.extra>0) advice.push('You included other expenses. Check toll and parking estimates before departure.');
+  if(!advice.length) advice.push('Your estimate is relatively modest. Keep a small buffer for traffic, detours, and fuel-price changes.');
+  document.getElementById('tips').textContent=advice.join(' ');
+ }catch(err){error.textContent=err.message;error.style.display='block';}
+});
+</script></body></html>

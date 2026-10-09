@@ -1,0 +1,70 @@
+ROADREADY: FUEL TRIP CALCULATOR
+Project report and assignment question responses
+
+1. Problem Identification
+Real-world problem: Drivers planning road trips may underestimate the money needed for gasoline and other travel expenses.
+Target users: Students, commuters, families, and anyone planning a local or long-distance drive.
+Why it matters: Estimating costs in advance supports budgeting and makes it easier to compare travel plans.
+Proposed solution: RoadReady accepts trip distance, vehicle fuel efficiency in miles per gallon (MPG), gas price per gallon, and optional additional expenses. It calculates fuel required, fuel cost, estimated total, and cost per mile.
+How AI contributes: ChatGPT was used as an AI development assistant to help design the solution, generate and review code, and prepare documentation. The app also includes a transparent rule-based recommendation helper that adapts advice to the inputs. This prototype does not call a live generative AI API, so it should not be described as a live AI chatbot.
+
+2. Application Development
+The website has an interactive input form, results dashboard, calculation endpoint, validation, and tailored tips. It is more than a static page because the browser sends data to a Flask back end, which validates inputs and returns calculated results.
+Error handling: Distance and MPG must be greater than zero; gas price and extra expenses cannot be negative. Invalid inputs return a clear error message.
+
+3. Technology Stack
+Front end: HTML, CSS, and JavaScript. HTML structures the page, CSS styles the interface, and JavaScript submits form data and updates results.
+Back end: Python with Flask. Flask serves the page and exposes POST /api/calculate to validate inputs and perform calculations.
+Deployment: Render using Gunicorn.
+Repository: GitHub stores source code and README instructions.
+Database: Not required for this prototype because it does not store user accounts or trip history.
+
+4. Application Architecture
+The user enters trip information in the browser. JavaScript sends a JSON request to the Flask API. The API validates the values, calculates gallons and costs, and returns JSON. The page then displays the estimate and tips. Render hosts the deployed Flask service, and GitHub stores the project files.
+
+5. AI Tools and Usage
+AI tool used: ChatGPT.
+How used: Brainstormed the road-trip budgeting problem, helped generate and explain the code, assisted with validation and error handling, and drafted setup and presentation materials.
+How AI contributes to the app: The recommendation logic selects relevant cost-saving tips based on distance, fuel efficiency, fuel cost, and extra expenses. In this version that feature is rule-based, not a live generative AI integration. The student should explain this distinction honestly and add a server-side AI API integration if the instructor requires live model output.
+
+6. Deployment
+Repository: Create a GitHub repository named roadready-fuel-calculator and upload the project files.
+Render build command: pip install -r requirements.txt
+Render start command: gunicorn app:app
+After deployment, copy the public Render URL and include it with the GitHub repository link in the submission. These links cannot be filled in until the student creates the repository and deploys the app.
+
+7. Testing
+Example: 300 miles, 30 MPG, $3.50 per gallon, and $10 other expenses.
+Gallons = 300 / 30 = 10 gallons.
+Fuel cost = 10 × $3.50 = $35.00.
+Estimated total = $35.00 + $10.00 = $45.00.
+Cost per mile = $45.00 / 300 = $0.15.
+Other tests: zero distance, zero MPG, negative gas price, and negative extra expenses should be rejected with an error.
+
+8. Development Challenges and Solutions
+Challenge: User input may be blank, invalid, or negative.
+Solution: The back end converts inputs to numbers, checks allowed ranges, and returns a clear error for invalid data.
+Challenge: The result needs to be easy to understand on mobile devices.
+Solution: A responsive layout rearranges the form and result cards for smaller screens.
+Challenge: Hosting a Python application requires a production server.
+Solution: Gunicorn is included in the requirements and Procfile for Render.
+
+9. Presentation Content
+Title: RoadReady — Fuel Trip Calculator
+Team members: [Add your name and any teammates]
+Problem: Drivers can underestimate fuel and road-trip costs.
+Target users: Students, commuters, families, and road-trip planners.
+Solution: An interactive calculator estimates fuel use and trip expenses.
+AI tools: ChatGPT for development support; in-app recommendations are rule-based.
+Technology: HTML, CSS, JavaScript, Python, Flask, Gunicorn, GitHub, Render.
+Major features: Input form, fuel calculation, cost summary, extra expenses, validation, personalized rule-based tips.
+Demonstration: Enter 300 miles, 30 MPG, $3.50/gallon, and $10 extras. Show 10 gallons, $35 fuel cost, and $45 estimated total.
+Challenges: Validation, responsive design, and deployment.
+Lessons learned: How a browser form communicates with a Flask API, how to validate data, how to calculate trip costs, and how to deploy source code.
+
+10. Important submission reminders
+- Create the GitHub repository and deploy to Render; this package does not automatically create accounts or publish the site.
+- Add actual GitHub and live Render URLs after deployment.
+- Do not commit passwords or API keys.
+- Understand the code and be ready to explain it.
+- Confirm whether the instructor requires a live generative AI API integration. The current recommendation helper is rule-based and may not satisfy a strict requirement for live AI integration by itself.
